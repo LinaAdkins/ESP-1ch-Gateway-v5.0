@@ -1,4 +1,6 @@
-# Single Channel LoRaWAN Gateway
+# Single Channel LoRaWAN Gateway for TTGO LoRa V2 Boards
+
+This version includes support for TTGO LoRa V2 boards ( the ones with the 3d wifi antennas ) out of the box as well as a few tweaks. 
 
 Version 5.2.1, June 06, 2018  
 Author: M. Westenberg (mw12554@hotmail.com)  
