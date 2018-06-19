@@ -56,9 +56,11 @@ long txDelay= 0x00;								// tx delay time on top of server TMST
 #define SPISPEED 8000000						// Set to 8 * 10E6
 
 // Frequencies
-// Set center frequency. If in doubt, choose the first one, comment all others
-// Each "real" gateway should support the first 3 frequencies according to LoRa spec.
+// Uncomment the frequencies for your country.
+// Comment out all but one frequency to set your center frequency. In general you should uusally choose the first one.
 
+// EU863-870 Frequencies
+/*
 int freqs [] = { 
 	868100000, 									// Channel 0, 868.1 MHz primary
 	868300000, 									// Channel 1, 868.3 MHz mandatory
@@ -69,9 +71,24 @@ int freqs [] = {
 	867700000,  								// Channel 6, 867.7 MHz Optional 
 	867900000,  								// Channel 7, 867.9 MHz Optional 
 	868800000,   								// Channel 8, 868.9 MHz Optional
-	869525000									// Channel 9, 869.5 MHz for responses gateway (10%)
-	// TTN defines an additional channel at 869.525Mhz using SF9 for class B. Not used
+	869525000									  // Channel 9, 869.5 MHz for responses gateway (10%) -- TTN defines an additional channel at 869.525Mhz using SF9 for class B. Not used
 };
+*/
+
+// US902-928 Frequencies
+int freqs [] = {
+  903900000,                  // Channel 0, 903.9 MHz primary
+/*904100000,                  // Channel 1, 904.1 MHz mandatory
+  904300000,                  // Channel 2, 904.3 MHz mandatory
+  904500000,                  // Channel 3, 904.5 MHz Optional
+  904700000,                  // Channel 4, 904.7 MHz Optional
+  904900000,                  // Channel 5, 904.9 MHz Optional
+  905100000,                  // Channel 6, 905.1 MHz Optional 
+  905300000,                  // Channel 7, 905.3 MHz Optional 
+  904600000,                  // Channel 8, 904.6 MHz Optional
+  923300000                   // Channel 9, 923.3 MHz DOWNLINK */
+};
+
 uint32_t  freq = freqs[0];
 uint8_t	 ifreq = 0;								// Channel Index
 
@@ -186,6 +203,27 @@ struct pins {
 #define RST 14
 #define SS 18
 
+#elif _PIN_OUT==6
+// ----------------------------------------------------------------------------
+// ESP32/TTGO v2 Board ( Same LoRa pins, different LCD pins )
+// SCK  == GPIO5/ PIN5
+// SS   == GPIO18/PIN18 CS
+// MISO == GPIO19/ PIN19
+// MOSI == GPIO27/ PIN27
+// RST  == GPIO14/ PIN14
+struct pins {
+  uint8_t dio0=26;    // GPIO26 / Dio0 used for one frequency and one SF
+  uint8_t dio1=33;    // GPIO33 / Used for CAD, not be shared with DIO0, NOT CONNECTED BY DEFAULT
+  uint8_t dio2=32;    // GPIO32 / Used for frequency hopping, don't care
+  uint8_t ss=18;      // GPIO18 / Dx. Select pin connected to GPIO18
+  uint8_t rst=14;     // GPIO14 / D3. Reset pin not used  
+} pins;
+#define SCK 5
+#define MISO 19
+#define MOSI 27
+#define RST 14
+#define SS 18
+
 #else
 // ----------------------------------------------------------------------------
 // Use your own pin definitions, and comment #error line below
@@ -193,11 +231,11 @@ struct pins {
 // MOSI 13 / D7
 // CLK  14 / D5
 // SS   16 / D0
-#error "Pin Definitions _PIN_OUT must be 1(HALLARD) or 2 (COMRESULT)"
+#error "Pin Definitions for _PIN_OUT must be 1-6!"
 #endif
 
-// STATR contains the statictis that are kept by message. 
-// Ech time a message is received or sent the statistics are updated.
+// STATR contains the statistics that are kept by message. 
+// Each time a message is received or sent the statistics are updated.
 // In case STATISTICS==1 we define the last MAX_STAT messages as statistics
 struct stat_t {
 	unsigned long tmst;						// Time since 1970 in seconds		
