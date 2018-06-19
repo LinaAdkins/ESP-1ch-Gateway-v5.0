@@ -39,9 +39,13 @@
 #define OLED_SCL 0								// GPIO0 / D3
 #define OLED_SDA 2								// GPIO2 / D4
 
-#elif _PIN_OUT==4								// TTGO (onboard version used, also for DIY)
+#elif _PIN_OUT==4								// TTGO w/ onboard display v1
 #define OLED_SCL 5								// GPIO5 / D1
 #define OLED_SDA 4								// GPIO4 / D2
+
+#elif _PIN_OUT==5               // TTGO w/ onboard display v2
+#define OLED_SCL 22
+#define OLED_SDA 21
 
 #endif
 
