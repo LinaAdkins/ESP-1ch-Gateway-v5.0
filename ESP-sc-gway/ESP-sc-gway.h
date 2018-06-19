@@ -1,4 +1,6 @@
-// 1-channel LoRa Gateway for ESP8266
+// 1-channel LoRa Gateway for ESP8266 & ESP32
+// This version includes some enhancements plus support for the TTGO LoRa v2 Board out of the box.
+//
 // Copyright (c) 2016, 2017, 2018 Maarten Westenberg version for ESP8266
 // Version 5.2.1 H
 // Date: 2018-06-06
@@ -79,8 +81,8 @@
 //	2: COMRESULT pin out
 //	3: ESP32 Wemos pin out
 //	4: ESP32 TTGO pinning
-//	5: Other, define your own in loraModem.h
-#define _PIN_OUT 1
+//	5: ESP32 TTGO v2 pinning
+#define _PIN_OUT 5
 
 // Gather statistics on sensor and Wifi status
 // 0= No statistics
@@ -105,14 +107,16 @@
 // NOTE: In all other cases, value 0 works for most gateways with CAD enabled
 #define _STRICT_1CH	0
 
-// Allows configuration through WifiManager AP setup. Must be 0 or 1					
+// Setup WiFi Through Wifi Manager, this will allow you to connect directly
+// to the gateway and specify your wifi credentials. You can also setup
+// the access point's ssid and password here. Default is off.
 #define WIFIMANAGER 0
-
-// Define the name of the accesspoint if the gateway is in accesspoint mode (is
-// getting WiFi SSID and password using WiFiManager)
 #define AP_NAME "YourName"
 #define AP_PASSWD "YourPassword"
-							
+
+// To connect to a wifi network, you can specify your ssid and password here.
+#define WIFI_SSID "YourSSID"
+#define WIFI_PASSWORD "YourPassword"
 
 // Defines whether the gateway will also report sensor/status value on MQTT
 // after all, a gateway can be a node to the system as well
@@ -136,7 +140,7 @@
 // OLED==0; No OLED display connected
 // OLED==1; 0.9 Oled Screen based on SSD1306
 // OLED==2;	1"3 Oled screens for Wemos, 128x64 SH1106
-#define OLED 2
+#define OLED 1
 
 
 // Define whether we want to manage the gateway over UDP (next to management 
@@ -174,10 +178,11 @@
 #define _NTP_INTERVAL 3600					// How often do we want time NTP synchronization
 #define _WWW_INTERVAL	60					// Number of seconds before we refresh the WWW page
 
-// MQTT definitions, these settings should be standard for TTN
-// and need not changing
+// MQTT / The Things Network Setup, uncomment if you want the European server
 #define _TTNPORT 1700						// Standard port for TTN
-#define _TTNSERVER "router.eu.thethings.network"
+
+//#define _TTNSERVER "router.eu.thethings.network"
+#define _TTNSERVER "us-west.thethings.network"
 
 // If you have a second back-end server defined such as Semtech or loriot.io
 // your can define _THINGPORT and _THINGSERVER with your own value.
@@ -185,16 +190,16 @@
 // Port is UDP port in this program
 //
 // Default for testing: Switched off
-#define _THINGPORT <port>					// dash.westenberg.org:8057
-#define _THINGSERVER "<dns.server.com>"		// Server URL of the LoRa-udp.js handler
+//#define _THINGPORT <port>					// dash.westenberg.org:8057
+//#define _THINGSERVER "<dns.server.com>"		// Server URL of the LoRa-udp.js handler
 
 // Gateway Ident definitions
-#define _DESCRIPTION "ESP Gateway"			// Name of the gateway
-#define _EMAIL "mw12554@hotmail.com"		// Owner
-#define _PLATFORM "ESP8266"
-#define _LAT 52.0
-#define _LON 5.0
-#define _ALT 1								// Altitude
+#define _DESCRIPTION "ESP32 TTGO v2 Gateway"
+#define _EMAIL "lina.adkins@gmail.com"
+#define _PLATFORM "ESP32"
+#define _LAT 42.3760
+#define _LON 122.9164
+#define _ALT 1
 
 // ntp
 // Please add daylight saving time to NTP_TIMEZONES when desired
@@ -259,15 +264,11 @@ struct wpas {
 	char passw[64];
 };
 
-// Please fill in at least ONE SSID and password from your own WiFI network
-// below. This is needed to get the gateway working
-// Note: DO NOT use the first and the last line of the stucture, these should be empty strings and
-//	the first line in te struct is reserved for WifiManager.
-//
+// You can add more than one SSID here if you'd like. Do NOT use the first and last values in the array.
 wpas wpa[] = {
-	{ "" , "" },							// Reserved for WiFi Manager
-	{ "fire", "water" },
-	{ "ape", "beer" }
+  { "" , "" },							// Reserved for WiFi Manager
+  { WIFI_SSID , WIFI_PASSWORD },
+  { "", "" }
 };
 
 // For asserting and testing the following defines are used.
